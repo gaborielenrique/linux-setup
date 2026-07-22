@@ -18,25 +18,6 @@ if has_command apt-get; then
     # hooking direnv to the terminal
     grep -qxF 'eval "$(direnv hook bash)"' ~/.bashrc || echo 'eval "$(direnv hook bash)"' >>~/.bashrc
 
-    echo "Installing vscode"
-    sudo apt install -y wget gpg apt-transport-https
-    wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor >packages.microsoft.gpg
-    sudo install -D -o root -g root -m 644 packages.microsoft.gpg /etc/apt/keyrings/packages.microsoft.gpg
-    echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main" | sudo tee /etc/apt/sources.list.d/vscode.list
-    rm packages.microsoft.gpg
-    sudo apt update
-    sudo apt install -y code
-
-    echo "Installing discord"
-    if has_command snap; then
-        sudo snap install discord
-    elif has_command flatpak; then
-        flatpak flathub com.discordapp.Discord
-    else
-        wget "https://discord.com/api/download?platform=linux&format=deb" -O discord.deb
-        sudo apt install -y ./discord.deb
-    fi
-
     echo "Installing lazyvim"
     mv ~/.config/nvim{,.bak} || echo "Can't backup nvim configs"
     mv ~/.local/share/nvim{,.bak} || echo "Can't backup nvim shares"
@@ -56,13 +37,26 @@ if has_command apt-get; then
     git config --global user.name "Gabriel Enrique Angulo Gonzalez"
     git config --global user.email "gaboangulo1@gmail.com"
 
-    echo "Lastly install any drivers that might be missing (this only works for ubuntu, mint, and debian)"
-    if [[ -f /etc/os-release ]]; then
-        . /etc/os-release
-        DISTRO_ID="$ID"
+    echo "Installing discord"
+    if has_command snap; then
+        sudo snap install discord
+    elif has_command flatpak; then
+        flatpak flathub com.discordapp.Discord
     else
-        echo "Distro ID not found"
+        wget "https://discord.com/api/download?platform=linux&format=deb" -O discord.deb
+        sudo apt install -y ./discord.deb
     fi
+
+    echo "Installing vscode"
+    sudo apt install -y wget gpg apt-transport-https
+    wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor >packages.microsoft.gpg
+    sudo install -D -o root -g root -m 644 packages.microsoft.gpg /etc/apt/keyrings/packages.microsoft.gpg
+    echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main" | sudo tee /etc/apt/sources.list.d/vscode.list
+    rm packages.microsoft.gpg
+    sudo apt update
+    sudo apt install -y code
+
+    echo "Lastly install any drivers that might be missing (this only works for ubuntu, mint, and debian)"
     if has_command ubuntu-drivers; then
         sudo ubuntu-drivers install
     fi
