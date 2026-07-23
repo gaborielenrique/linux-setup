@@ -15,7 +15,7 @@ if has_command apt-get; then
     sudo apt autoremove -y
 
     echo "Installing some utilities"
-    sudo apt install -y git curl htop neovim build-essential cmake clangd gdb ripgrep fd-find tree tmux zip unzip python3 python3-pip python3-venv direnv
+    sudo apt install -y git curl htop build-essential cmake clangd gdb ripgrep fd-find tree tmux zip unzip python3 python3-pip python3-venv direnv
 
     # hooking direnv to the terminal
     grep -qxF 'eval "$(direnv hook bash)"' ~/.bashrc || echo 'eval "$(direnv hook bash)"' >>~/.bashrc
@@ -25,6 +25,15 @@ if has_command apt-get; then
     echo "deb [signed-by=/usr/share/keyrings/brave-browser-archive-keyring.gpg] https://brave-browser-apt-release.s3.brave.com/ stable main" | sudo tee /etc/apt/sources.list.d/brave-browser-release.list
     sudo apt update
     cd Desktop && sudo apt install -y brave-browser && cd ~ || echo "couldn't install brave browser"
+
+    echo "Installing neovim"
+    sudo apt remove -y neovim
+    curl -LO https://github.com/neovim/neovim/releases/download/stable/nvim-linux-x86_64.tar.gz
+    sudo rm -rf /opt/nvim
+    sudo tar -C /opt -xzf nvim-linux-x86_64.tar.gz
+    sudo mv /opt/nvim-linux-x86_64 /opt/nvim
+    sudo ln -sf /opt/nvim/bin/nvim /usr/local/bin/nvim
+    rm nvim-linux-x86_64.tar.gz || echo "ERROR: Couldn't remove the neovim tarball"
 
     echo "Installing lazyvim"
     mv ~/.config/nvim{,.bak} || echo "Can't backup nvim configs"
@@ -38,8 +47,8 @@ if has_command apt-get; then
     mkdir -p ~/.local/share/fonts
     wget https://github.com/ryanoasis/nerd-fonts/releases/latest/download/JetBrainsMono.zip
     unzip JetBrainsMono.zip -d ~/.local/share/fonts/JetBrainsMono
-    fc-cache -fv
-    rm JetBrainsMono.zip
+    fc-cache -fv || echo "ERROR: Couldn't build font cache"
+    rm JetBrainsMono.zip || echo "ERROR: Couldn't remove nerd font zip"
 
     echo "Config git email and username"
     git config --global user.name "Gabriel Enrique Angulo Gonzalez"
@@ -52,7 +61,7 @@ if has_command apt-get; then
         if ! flatpak remotes | grep -q "flathub"; then
             sudo flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
         fi
-        flatpak install flathub com.discordapp.Discord
+        flatpak install -y flathub com.discordapp.Discord
     else
         wget "https://discord.com/api/download?platform=linux&format=deb" -O discord.deb
         sudo apt install -y ./discord.deb
