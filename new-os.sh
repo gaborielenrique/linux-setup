@@ -18,6 +18,12 @@ if has_command apt-get; then
     # hooking direnv to the terminal
     grep -qxF 'eval "$(direnv hook bash)"' ~/.bashrc || echo 'eval "$(direnv hook bash)"' >>~/.bashrc
 
+    # Installing brave browser
+    sudo curl -fsSLo /usr/share/keyrings/brave-browser-archive-keyring.gpg https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg
+    echo "deb [signed-by=/usr/share/keyrings/brave-browser-archive-keyring.gpg] https://brave-browser-apt-release.s3.brave.com/ stable main" | sudo tee /etc/apt/sources.list.d/brave-browser-release.list
+    sudo apt update
+    sudo apt install brave-browser
+
     echo "Installing lazyvim"
     mv ~/.config/nvim{,.bak} || echo "Can't backup nvim configs"
     mv ~/.local/share/nvim{,.bak} || echo "Can't backup nvim shares"
