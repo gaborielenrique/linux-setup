@@ -49,7 +49,10 @@ if has_command apt-get; then
     if has_command snap; then
         sudo snap install discord
     elif has_command flatpak; then
-        flatpak flathub com.discordapp.Discord
+        if ! flatpak remotes | grep -q "flathub"; then
+            sudo flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+        fi
+        flatpak install flathub com.discordapp.Discord
     else
         wget "https://discord.com/api/download?platform=linux&format=deb" -O discord.deb
         sudo apt install -y ./discord.deb
