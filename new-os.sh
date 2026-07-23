@@ -8,6 +8,7 @@ has_command() {
     command -v "$1" >/dev/null 2>&1
 }
 
+# Works with ubuntu based distros
 if has_command apt-get; then
     echo "Update the system"
     sudo apt update
@@ -85,4 +86,18 @@ if has_command apt-get; then
     sudo apt update && sudo apt upgrade -y && sudo apt autoremove -y
 
     echo "Done! Now, here's what you want to do: 1) Restart the terminal 2) Load nvim to fully install lazyvim and wait for it to fully install (usually like 30 mins) and 3) Restart the terminal again"
+fi
+
+# Works with Fedora, Nobara, Rocky, and Alma
+if has_command dnf; then
+    echo "Hey, this bitch uses dnf... AYYY YOOO"
+
+    sudo dnf upgrade -y && sudo dnf autoremove -y
+fi
+
+# Works with Arch btw, EndeavourOS, CachyOS, and Manjaro
+if has_command pacman; then
+    echo "Hey, this bitch uses pacman... AYYYYEEE YYYOOOOOO"
+
+    sudo pacman -Sy && sudo pacman -Syu
 fi
