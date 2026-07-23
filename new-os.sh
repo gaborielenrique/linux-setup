@@ -1,6 +1,8 @@
 #!/bin/bash
 set -euo pipefail
 
+cd ~
+
 # Helper function for checking for package manager
 has_command() {
     command -v "$1" >/dev/null 2>&1
@@ -22,7 +24,7 @@ if has_command apt-get; then
     sudo curl -fsSLo /usr/share/keyrings/brave-browser-archive-keyring.gpg https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg
     echo "deb [signed-by=/usr/share/keyrings/brave-browser-archive-keyring.gpg] https://brave-browser-apt-release.s3.brave.com/ stable main" | sudo tee /etc/apt/sources.list.d/brave-browser-release.list
     sudo apt update
-    sudo apt install -y brave-browser
+    cd Desktop && sudo apt install -y brave-browser && cd ~ || echo "couldn't install brave browser"
 
     echo "Installing lazyvim"
     mv ~/.config/nvim{,.bak} || echo "Can't backup nvim configs"
